@@ -1,0 +1,15 @@
+Revision history for Perl extension Math::Prime::XS.
+
+0.13 Wed Oct 26 19:44:23 CEST 2005
+ - Converted Math::Prime::Simple over to XS.
+ - Reimplemented the Sieve of Eratosthenes in C.
+ - Added modulo operator division, trial division and a 
+   "hybrid" summing calculation method.
+ - Updated the docs with relevant function documentation 
+   and related benchmarks.
+
+0.03 2004/01/14
+ - Implemented the Sieve of Eratosthenes.
+
+0.01 2004/01/14
+ - Initial version.
