@@ -7,7 +7,7 @@ use base qw(Exporter);
 
 our (@subs, @EXPORT_OK, %EXPORT_TAGS, $VERSION);
 
-$VERSION = '0.13';
+$VERSION = '0.14';
 @subs = qw(primes is_prime mod_primes sieve_primes sum_primes trial_primes);
 @EXPORT_OK = (@subs);
 %EXPORT_TAGS = ('all' => [ @subs ]);
@@ -16,13 +16,13 @@ require XSLoader;
 XSLoader::load('Math::Prime::XS', $VERSION);
 
 *primes = \&sum_primes;
+*is_prime = \&xs_is_prime;
 
 # Need to swap args, because an optional arg can't occupy the first "slot" in XS
 sub mod_primes   { @_ == 1 ? &xs_mod_primes: xs_mod_primes($_[1],$_[0]) }
 sub sieve_primes { @_ == 1 ? &xs_sieve_primes : xs_sieve_primes($_[1],$_[0]) }
 sub sum_primes   { @_ == 1 ? &xs_sum_primes : xs_sum_primes($_[1],$_[0]) }
 sub trial_primes { @_ == 1 ? &xs_trial_primes : xs_trial_primes($_[1],$_[0]) }
-sub is_prime     { &xs_is_prime }
 
 1;
 __END__

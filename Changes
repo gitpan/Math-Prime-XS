@@ -1,5 +1,10 @@
 Revision history for Perl extension Math::Prime::XS.
 
+0.14 Sat Oct 29 20:30:42 CEST 2005
+ - Added INSTALL instructions to the package.
+ - The xs_files argument in Build.PL specifies where *.xs 
+   files reside.
+
 0.13 Wed Oct 26 19:44:23 CEST 2005
  - Converted Math::Prime::Simple over to XS.
  - Reimplemented the Sieve of Eratosthenes in C.
