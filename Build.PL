@@ -14,7 +14,11 @@ my $build = Module::Build->new
                  'XSLoader' => 0,
 	       },
    recommends => {},
-   build_requires => {},
+   build_requires => { 
+                       'Test::More' => 0,
+                       'Test::Pod' => '1.14',
+		       'Test::Pod::Coverage' => '1.04',
+		     },
    conflicts => {},
    xs_files => { 'XS.xs' => 'blib/Math/Prime/XS.xs' },
    license => 'perl',

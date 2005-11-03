@@ -1,5 +1,8 @@
 Revision history for Perl extension Math::Prime::XS.
 
+0.15 Thu Nov  3 20:45:22 CET 2005
+ - Omitted the pod-coverage testing part for XSUB's.
+
 0.14 Sat Oct 29 20:30:42 CEST 2005
  - Added INSTALL instructions to the package.
  - The xs_files argument in Build.PL specifies where *.xs 

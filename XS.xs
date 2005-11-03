@@ -16,12 +16,12 @@ xs_mod_primes(number, ...)
     PROTOTYPE: $;$
     INIT:
 	long i, n;
-	int modulo_rest_null;
+	bool modulo_rest_null;
     PPCODE:
         if (items == 1) base = 2;
 	else base = SvIV(ST(1));
 	if (base >= number) {
-            croak("base is greater or equal number");
+            croak("Base is greater or equal number");
 	}
 	for (n = base; n <= number; n++) {
 	    if (n > base && n / 2 == 0) continue;
@@ -53,7 +53,7 @@ xs_sieve_primes(number, ...)
         if (items == 1) base = 2;
 	else base = SvIV(ST(1));
 	if (base >= number) {
-            croak("base is greater or equal number");
+            croak("Base is greater or equal number");
 	}
 	composite = newHV();
 	for (n = 2; n <= number; n++) {
@@ -83,12 +83,12 @@ xs_sum_primes(number, ...)
     INIT:
 	long primes[number], psum[number];
 	long i, n, pcount, square_root;
-	int is_prime;
+	bool is_prime;
     PPCODE:
         if (items == 1) base = 2;
 	else base = SvIV(ST(1));
 	if (base >= number) {
-            croak("base is greater or equal number");
+            croak("Base is greater or equal number");
 	}
         square_root = floor(sqrt(number)) + 1;
 	primes[0] = 2;
@@ -119,7 +119,7 @@ xs_trial_primes(number, ...)
     PROTOTYPE: $;$
     INIT:
 	long i, n, square_root;
-	int is_prime;
+	bool is_prime;
 	HV* primes;
 	char* num_key;
 	STRLEN len_key;
@@ -129,7 +129,7 @@ xs_trial_primes(number, ...)
         if (items == 1) base = 2;
 	else base = SvIV(ST(1));
 	if (base >= number) {
-            croak("base is greater or equal number");
+            croak("Base is greater or equal number");
 	}
 	primes = newHV();
 	for (n = 2; n <= number; n++) {
@@ -162,7 +162,7 @@ xs_is_prime(number)
     INIT:
 	long primes[number], psum[number];
 	long i, n, pcount, square_root;
-	int is_prime;
+	bool is_prime;
     PPCODE:
         square_root = floor(sqrt(number)) + 1;
 	primes[0] = 2;
