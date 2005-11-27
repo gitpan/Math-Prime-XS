@@ -1,27 +1,26 @@
 package Math::Prime::XS;
 
-use 5.008007;
 use strict;
 use warnings;
 use base qw(Exporter);
 
-our (@subs, @EXPORT_OK, %EXPORT_TAGS, $VERSION);
+our ($VERSION, @EXPORT_OK, %EXPORT_TAGS, @subs);
 
-$VERSION = '0.15';
+$VERSION = '0.16';
 @subs = qw(primes is_prime mod_primes sieve_primes sum_primes trial_primes);
-@EXPORT_OK = (@subs);
+@EXPORT_OK = @subs;
 %EXPORT_TAGS = ('all' => [ @subs ]);
 
 require XSLoader;
-XSLoader::load('Math::Prime::XS', $VERSION);
+XSLoader::load(__PACKAGE__, $VERSION);
 
-*primes = \&sum_primes;
+*primes   = \&sum_primes;
 *is_prime = \&xs_is_prime;
 
 # Need to swap args, because an optional arg can't occupy the first "slot" in XS
-sub mod_primes   { @_ == 1 ? &xs_mod_primes: xs_mod_primes($_[1],$_[0]) }
+sub mod_primes   { @_ == 1 ? &xs_mod_primes   : xs_mod_primes($_[1],$_[0])   }
 sub sieve_primes { @_ == 1 ? &xs_sieve_primes : xs_sieve_primes($_[1],$_[0]) }
-sub sum_primes   { @_ == 1 ? &xs_sum_primes : xs_sum_primes($_[1],$_[0]) }
+sub sum_primes   { @_ == 1 ? &xs_sum_primes   : xs_sum_primes($_[1],$_[0])   }
 sub trial_primes { @_ == 1 ? &xs_trial_primes : xs_trial_primes($_[1],$_[0]) }
 
 1;
@@ -35,16 +34,15 @@ Math::Prime::XS - Calculate/detect prime numbers with deterministic tests
 
  use Math::Prime::XS qw(primes is_prime);
  
- @allprimes = primes(9);
- 
+ @allprimes  = primes(9);
  @someprimes = primes(4,9);
  
- if (is_prime(11)) { print "Is prime!" }
+ if (is_prime(11)) { # do something }
 
 =head1 DESCRIPTION
 
 Math::Prime::XS calculates/detects prime numbers by either applying
-Modulo operator division, the Sieve of Eratosthenes, Trial division or a 
+Modulo operator division, the Sieve of Eratosthenes, Trial division or a
 Summing calculation.
 
 =head1 FUNCTIONS
@@ -145,13 +143,13 @@ L<http://www.it.fht-esslingen.de/~schmidt/vorlesungen/kryptologie/seminar/ws9798
 
 =head1 AUTHOR
 
-Steven Schubiger, schubiger@cpan.org
+Steven Schubiger <schubiger@cpan.org>
 
 =head1 LICENSE
 
-This program is free software; you may redistribute it and/or 
+This program is free software; you may redistribute it and/or
 modify it under the same terms as Perl itself.
 
-See L<http://www.perl.com/perl/misc/Artistic.html>	    
+See L<http://www.perl.com/perl/misc/Artistic.html>
 
 =cut

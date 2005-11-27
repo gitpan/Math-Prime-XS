@@ -5,11 +5,10 @@ NAME
 SYNOPSIS
      use Math::Prime::XS qw(primes is_prime);
  
-     @allprimes = primes(9);
- 
+     @allprimes  = primes(9);
      @someprimes = primes(4,9);
  
-     if (is_prime(11)) { print "Is prime!" }
+     if (is_prime(11)) { # do something }
 
 DESCRIPTION
     Math::Prime::XS calculates/detects prime numbers by either applying
@@ -111,7 +110,7 @@ SEE ALSO
     /ws9798/html/prim/prim-1.html>
 
 AUTHOR
-    Steven Schubiger, schubiger@cpan.org
+    Steven Schubiger <schubiger@cpan.org>
 
 LICENSE
     This program is free software; you may redistribute it and/or modify it

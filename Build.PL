@@ -1,7 +1,5 @@
 # Note: this file has been initially created by Make::Build::Convert 0.20_05
 
-use 5.008007;
-
 use Module::Build;
 
 my $build = Module::Build->new
@@ -13,14 +11,13 @@ my $build = Module::Build->new
                  'Exporter' => 0,
                  'XSLoader' => 0,
 	       },
-   recommends => {},
-   build_requires => { 
-                       'Test::More' => 0,
-                       'Test::Pod' => '1.14',
-		       'Test::Pod::Coverage' => '1.04',
-		     },
-   conflicts => {},
+   build_requires => { 'Test::More' => 0 },	       
+   recommends => {
+                   'Test::Pod' => '1.14',
+		   'Test::Pod::Coverage' => '1.04',
+                 },
    xs_files => { 'XS.xs' => 'blib/Math/Prime/XS.xs' },
+   include_dirs => [ '.' ],
    license => 'perl',
    create_readme => 1,
    create_makefile_pl => 'passthrough',
