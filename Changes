@@ -1,5 +1,10 @@
 Revision history for Perl extension Math::Prime::XS.
 
+0.17 Tue Apr  4 20:53:19 CEST 2006
+
+ - Changed Build.PL argument create_makefile_pl from 'passtrough'
+   to 'traditional' for the sake of compatibility.
+
 0.15 Thu Nov  3 20:45:22 CET 2005
 
  - Omitted the pod-coverage testing part for XSUB's.
