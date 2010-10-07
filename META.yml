@@ -1,25 +1,31 @@
 ---
 name: Math-Prime-XS
-version: 0.20_01
+version: 0.20_02
 author:
   - 'Steven Schubiger <schubiger@cpan.org>'
-abstract: Calculate/detect prime numbers with deterministic tests
+abstract: Detect and calculate prime numbers with deterministic tests
 license: perl
 resources:
   license: http://dev.perl.org/licenses/
-requires:
-  Exporter: 0
-  XSLoader: 0
 build_requires:
   Test::More: 0
+requires:
+  Carp: 0
+  Exporter: 0
+  Params::Validate: 0
+  Scalar::Util: 0
+  XSLoader: 0
+  boolean: 0
 recommends:
   Test::Pod: 1.14
   Test::Pod::Coverage: 1.04
+configure_requires:
+  Module::Build: 0.34
 provides:
   Math::Prime::XS:
     file: lib/Math/Prime/XS.pm
-    version: 0.20_01
-generated_by: Module::Build version 0.2808
+    version: 0.20_02
+generated_by: Module::Build version 0.34
 meta-spec:
-  url: http://module-build.sourceforge.net/META-spec-v1.2.html
-  version: 1.2
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4

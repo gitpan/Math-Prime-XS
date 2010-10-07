@@ -3,152 +3,220 @@ package Math::Prime::XS;
 use strict;
 use warnings;
 use base qw(Exporter);
+use boolean qw(true false);
 
-our ($VERSION, @EXPORT_OK, %EXPORT_TAGS, @subs);
+use Carp qw(croak);
+use Params::Validate ':all';
+use Scalar::Util qw(looks_like_number);
 
-$VERSION = '0.20_01';
-@subs = qw(primes is_prime mod_primes sieve_primes sum_primes trial_primes);
+our ($VERSION, @EXPORT_OK, %EXPORT_TAGS);
+my @subs;
+
+$VERSION = '0.20_02';
+@subs = qw(is_prime primes mod_primes sieve_primes sum_primes trial_primes);
 @EXPORT_OK = @subs;
 %EXPORT_TAGS = ('all' => [ @subs ]);
 
+validation_options(
+    on_fail => sub
+{
+    my ($error) = @_;
+    chomp $error;
+    croak $error;
+},
+    stack_skip => 2,
+);
+
+sub is_prime
+{
+    # sub {} due to extra stack_skip level
+    sub { validate_pos(@_, 1) }->(@_);
+    _validate(@_);
+    return defined xs_sieve_primes(($_[0]) x 2) ? true : false;
+}
+
+*primes = \&sieve_primes;
+
+# Reverse arguments for xs_*_primes() when both base and number are specified
+sub mod_primes   { _validate(@_); @_ == 1 ? xs_mod_primes  ($_[0], 2) : xs_mod_primes  (reverse @_) }
+sub sieve_primes { _validate(@_); @_ == 1 ? xs_sieve_primes($_[0], 2) : xs_sieve_primes(reverse @_) }
+sub sum_primes   { _validate(@_); @_ == 1 ? xs_sum_primes  ($_[0], 2) : xs_sum_primes  (reverse @_) }
+sub trial_primes { _validate(@_); @_ == 1 ? xs_trial_primes($_[0], 2) : xs_trial_primes(reverse @_) }
+
+sub _validate
+{
+    my $positive_num = sub { looks_like_number($_[0]) && $_[0] >= 0 };
+
+    validate_pos(@_,
+        { type => SCALAR,
+          callbacks => {
+            'is a positive number' => $positive_num,
+          },
+        },
+        { type => SCALAR,
+          optional => true,
+          callbacks => {
+            'is a positive number' => $positive_num,
+          },
+        },
+    );
+    if (@_ == 2) {
+        my ($base, $number) = @_;
+        croak 'Base is greater or equal number' if $base >= $number;
+    }
+}
+
 require XSLoader;
 XSLoader::load(__PACKAGE__, $VERSION);
-
-*primes   = \&sum_primes;
-*is_prime = \&xs_is_prime;
-
-# Need to swap args, because an optional arg can't occupy the first "slot" in XS
-sub mod_primes   { @_ == 1 ? &xs_mod_primes   : xs_mod_primes($_[1],$_[0])   }
-sub sieve_primes { @_ == 1 ? &xs_sieve_primes : xs_sieve_primes($_[1],$_[0]) }
-sub sum_primes   { @_ == 1 ? &xs_sum_primes   : xs_sum_primes($_[1],$_[0])   }
-sub trial_primes { @_ == 1 ? &xs_trial_primes : xs_trial_primes($_[1],$_[0]) }
 
 1;
 __END__
 
 =head1 NAME
 
-Math::Prime::XS - Calculate/detect prime numbers with deterministic tests
+Math::Prime::XS - Detect and calculate prime numbers with deterministic tests
 
 =head1 SYNOPSIS
 
  use Math::Prime::XS ':all';
  # or
- use Math::Prime::XS qw(primes is_prime mod_primes sieve_primes sum_primes trial_primes);
+ use Math::Prime::XS qw(is_prime primes mod_primes sieve_primes sum_primes trial_primes);
 
- @all_primes   = primes(9);
- @range_primes = primes(4, 9);
+ print "prime" if is_prime(59);
 
- if (is_prime(11)) { # do stuff }
+ @all_primes   = primes(100);
+ @range_primes = primes(30, 70);
 
- @all_primes   = mod_primes(9);
- @range_primes = mod_primes(4, 9);
+ @all_primes   = mod_primes(100);
+ @range_primes = mod_primes(30, 70);
 
- @all_primes   = sieve_primes(9);
- @range_primes = sieve_primes(4, 9);
+ @all_primes   = sieve_primes(100);
+ @range_primes = sieve_primes(30, 70);
 
- @all_primes   = sum_primes(9);
- @range_primes = sum_primes(4, 9);
+ @all_primes   = sum_primes(100);
+ @range_primes = sum_primes(30, 70);
 
- @all_primes   = trial_primes(9);
- @range_primes = trial_primes(4, 9);
+ @all_primes   = trial_primes(100);
+ @range_primes = trial_primes(30, 70);
 
 =head1 DESCRIPTION
 
-C<Math::Prime::XS> calculates/detects prime numbers by either applying
-Modulo operator division, the Sieve of Eratosthenes, Trial division or a
-Summing calculation.
+C<Math::Prime::XS> detects and calculates prime numbers by either applying
+Modulo operator division, the Sieve of Eratosthenes, a Summation calculation
+or Trial division.
 
 =head1 FUNCTIONS
 
-=head2 primes
-
-Takes an integer and calculates the primes from 0 <= integer.
-Optionally an integer may be provided as first argument which will function as limit.
-Calculation then will take place within the range of the limit and the integer.
-Calls C<sum_primes()> beneath the surface.
-
 =head2 is_prime
 
-Takes an integer as input and returns 1 if integer is prime, 0 if it isn't.
-The underlying algorithm has been taken from C<sum_primes()>.
+ is_prime($number);
+
+Returns true if the number is prime, false if not.
+
+The XS function invoked within C<is_prime()> is subject to change
+(currently C<xs_sieve_primes()>).
+
+=head2 primes
+
+ @all_primes   = primes($number);
+ @range_primes = primes($base, $number);
+
+Returns all primes for the given number or primes between the base and number.
+
+The resolved function called is subject to change (currently C<sieve_primes()>).
 
 =head2 mod_primes
 
-Applies the Modulo operator division and provides same functionality and interface as C<primes()>.
-Divides the number by all n less or equal then the number; if the number gets exactly two times
-divided by rest null, then the number is prime, otherwise not.
+ @all_primes   = mod_primes($number);
+ @range_primes = mod_primes($base, $number);
+
+Applies the Modulo operator division algorithm:
+
+Divide the number by all numbers less or equal than itself; if the number
+is divided exactly two times by the modulo operator without rest, then the
+number is prime.
+
+Returns all primes for the given number or primes between the base and number.
 
 =head2 sieve_primes
 
-Applies the Sieve of Erathosthenes and provides same functionality and interface as C<primes()>.
-The most efficient way to find all of the small primes (say all those less than 10,000,000)
-is by using the Sieve of Eratosthenes (ca 240 BC): Make a list of all the integers less
-than or equal to n (and greater than one).  Strike out the multiples of all primes less
-than or equal to the square root of n, then the numbers that are left are the primes.
+ @all_primes   = sieve_primes($number);
+ @range_primes = sieve_primes($base, $number);
+
+Applies the Sieve of Eratosthenes algorithm:
+
+One of the most efficient ways to find all the small primes (say, all those less
+than 10,000,000) is by using the Sieve of Eratosthenes (ca 240 BC). Make a list
+of all numbers less than or equal to n (and greater than one) and strike out
+the multiples of all primes less than or equal to the square root of n:
+the numbers that are left are primes.
+
+Returns all primes for the given number or primes between the base and number.
 
 L<http://primes.utm.edu/glossary/page.php?sort=SieveOfEratosthenes>
 
 =head2 sum_primes
 
-Applies a Summing calculation that is somehow similar to C<trial_primes()>; provides same
-functionality and interface as C<primes()>. Compared to C<trial_primes()>, Trial division is
-being omitted and replaced by an addition of primes less than the number's square root.
-If one of the "multiples" equals the number, then the number is not prime, otherwise,
-it is. This algorithm is a somewhat hybrid between the Sieve of Eratosthenes and Trial
-division.
+ @all_primes   = sum_primes($number);
+ @range_primes = sum_primes($base, $number);
 
-L<http://www.geraldbuehler.de/primzahlen>
+Applies the Summation calculation algorithm:
+
+The summation calculation algorithm resembles the modulo operator division
+algorithm, but also shares some common properties with the Sieve of
+Eratosthenes. For each saved prime smaller than or equal to the square root
+of the number, recall the corresponding sum (if none, start with zero);
+add the prime to the sum being calculated while the summation is smaller
+than the number. If none of the sums equals the number, then the number
+is prime.
+
+Returns all primes for the given number or primes between the base and number.
+
+L<http://www.geraldbuehler.de/primzahlen/>
 
 =head2 trial_primes
 
-Applies Trial division and provides the same functionality and interface as C<primes()>. To see
-if an individual small integer is prime, Trial division works well: just divide by all the
-primes less than (or equal to) its square root. For example, to show 211 is prime, just divide
-by 2, 3, 5, 7, 11, and 13. Since none of these divides the number evenly, it is a prime.
+ @all_primes   = trial_primes($number);
+ @range_primes = trial_primes($base, $number);
+
+Applies the Trial division algorithm:
+
+To see if an individual small number is prime, trial division works well:
+just divide by all the primes less than or equal to its square root. For
+example, to assert 211 is prime, divide by 2, 3, 5, 7, 11 and 13. Since
+none of these primes divides the number evenly, it is prime.
+
+Returns all primes for the given number or primes between the base and number.
 
 L<http://primes.utm.edu/glossary/page.php?sort=TrialDivision>
 
 =head1 BENCHMARK
 
-If one appends C<_primes> to the names on the left, one gets the full subnames.
-Following benchmark output refers to output generated by the C<cmpthese()> function
-of the Benchmark module.
+Following output resulted from a benchmark measuring the time to calculate
+primes up to 1,000,000 with 100 iterations for each function. The tests
+were conducted by the C<cmpthese> function of the Benchmark module.
 
-Calculation results:
-
-primes <= 4000, one iteration:
-
-          Rate sieve   mod trial   sum
- sieve 0.333/s    --  -97%  -98%  -99%
- mod    11.9/s 3478%    --  -33%  -57%
- trial  17.9/s 5277%   50%    --  -35%
- sum    27.6/s 8186%  132%   54%    --
-
-primes <= 8000, one iteration:
-
-             Rate sieve   mod   sum trial
- sieve 7.71e-02/s    --  -98%  -99%  -99%
- mod       3.31/s 4188%    --  -53%  -54%
- sum       7.00/s 8979%  112%    --   -2%
- trial     7.14/s 9164%  116%    2%    --
-
-Bear in mind, that these results are not too reliable as the author could neither increase the number
-nor the iteration count provided, because if he attempted to do so, perl would report "Out of memory!",
-which was most likely caused by the Sieve of Eratosthenes algorithm, which is rather memory exhaustive
-by implementation. The Sieve of Eratosthenes is expected to be the slowest, followed by the Modulo
-operator division, then either Summing calculation or Trial division (dependant upon the iterations)
-followed by its counterpart.
+                   Rate   mod_primes   sum_primes trial_primes sieve_primes
+mod_primes   6.39e-03/s           --        -100%        -100%        -100%
+sum_primes       8.10/s      126540%           --         -41%         -89%
+trial_primes     13.6/s      212979%          68%           --         -82%
+sieve_primes     74.6/s     1167064%         822%         448%           --
 
 =head1 EXPORT
 
 =head2 Functions
 
-C<primes(), is_prime(), mod_primes(), sieve_primes(), sum_primes(), trial_primes()> are exportable.
+C<is_prime(), primes(), mod_primes(), sieve_primes(), sum_primes(), trial_primes()>
+are exportable.
 
 =head2 Tags
 
 C<:all - *()>
+
+=head1 BUGS & CAVEATS
+
+Note that the order of execution speed for functions may differ from the
+benchmarked results when numbers get larger or smaller.
 
 =head1 SEE ALSO
 
@@ -164,6 +232,6 @@ Steven Schubiger <schubiger@cpan.org>
 This program is free software; you may redistribute it and/or
 modify it under the same terms as Perl itself.
 
-See L<http://www.perl.com/perl/misc/Artistic.html>
+See L<http://dev.perl.org/licenses/>
 
 =cut

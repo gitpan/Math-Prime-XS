@@ -1,5 +1,51 @@
 Revision history for Perl extension Math::Prime::XS.
 
+0.20_02  2010-10-07  <schubiger@cpan.org>
+
+ - Allocate memory dynamically for xs_*_primes() instead of using
+   fixed-width arrays. [rt #58322 - Kevin Ryde]
+
+ - Utilize the composite array in xs_sieve_primes() as bit field.
+
+ - Don't use a hash in xs_trial_primes() to save primes.
+   [rt #58074 - Kevin Ryde]
+
+ - Optimize the implementation of some algorithms.
+
+ - Store numbers with automatically growing their memory.
+
+ - Separate the base number initialization and check from the XSUBs.
+
+ - is_prime() wraps around a xs_*_primes XSUB.
+
+ - Remove xs_is_prime() as it's no longer used.
+
+ - Validation of arguments is handled by Params::Validate.
+
+ - Use the boolean pragma for true/false values.
+
+ - Document both invocations of each prime calculating function.
+
+ - Refine the documentation of these functions and is_prime().
+
+ - Renew the benchmark results and rephrase its description.
+
+ - Mention bugs and caveats.
+
+ - Adapt the synopsis to use greater numbers.
+
+ - Reword the abstract.
+
+ - Update broken license link.
+
+ - Be more verbose while testing by printing the numbers.
+
+ - Remove the testing diagnostic.
+
+ - Rename calc_primes.t to functions.t.
+
+ - Adjust test file permissions.
+
 0.20_01 Thu May 15 17:13:07 CEST 2008
 
  - Use memset() within xs_sieve_primes() to "clear" the

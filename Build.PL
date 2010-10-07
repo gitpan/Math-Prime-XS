@@ -11,7 +11,11 @@ my $build = Module::Build->new
    dist_author => 'Steven Schubiger <schubiger@cpan.org>',
    dist_version_from => 'lib/Math/Prime/XS.pm',
    requires => {
+                 'boolean' => 0,
+                 'Carp' => 0,
                  'Exporter' => 0,
+                 'Params::Validate' => 0,
+                 'Scalar::Util' => 0,
                  'XSLoader' => 0,
                },
    build_requires => { 'Test::More' => 0 },
