@@ -1,5 +1,9 @@
 Revision history for Perl extension Math::Prime::XS.
 
+0.21  2010-10-08  <schubiger@cpan.org>
+
+ - Merged development version to stable.
+
 0.20_02  2010-10-07  <schubiger@cpan.org>
 
  - Allocate memory dynamically for xs_*_primes() instead of using

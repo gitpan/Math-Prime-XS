@@ -1,6 +1,6 @@
 ---
 name: Math-Prime-XS
-version: 0.20_02
+version: 0.21
 author:
   - 'Steven Schubiger <schubiger@cpan.org>'
 abstract: Detect and calculate prime numbers with deterministic tests
@@ -24,7 +24,7 @@ configure_requires:
 provides:
   Math::Prime::XS:
     file: lib/Math/Prime/XS.pm
-    version: 0.20_02
+    version: 0.21
 generated_by: Module::Build version 0.34
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
