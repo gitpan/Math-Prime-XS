@@ -12,7 +12,7 @@ use Scalar::Util qw(looks_like_number);
 our ($VERSION, @EXPORT_OK, %EXPORT_TAGS);
 my @subs;
 
-$VERSION = '0.21';
+$VERSION = '0.21_01';
 @subs = qw(is_prime primes mod_primes sieve_primes sum_primes trial_primes);
 @EXPORT_OK = @subs;
 %EXPORT_TAGS = ('all' => [ @subs ]);
@@ -62,7 +62,7 @@ sub _validate
     );
     if (@_ == 2) {
         my ($base, $number) = @_;
-        croak 'Base is greater or equal number' if $base >= $number;
+        croak 'Base is greater than the number' if $base > $number;
     }
 }
 

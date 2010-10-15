@@ -86,7 +86,6 @@ xs_sieve_primes (number, base)
     PROTOTYPE: $$
     INIT:
       unsigned long *composite = NULL;
-      unsigned int pos = 0;
       unsigned long i, n;
     PPCODE:
       const unsigned int size_bits = sizeof (unsigned long) * BYTE_BITS;

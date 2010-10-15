@@ -1,5 +1,15 @@
 Revision history for Perl extension Math::Prime::XS.
 
+0.21_01  2010-10-15  <schubiger@cpan.org>
+
+ - Omit checking for validations if the base equals the number.
+   [rt #62112 - Kevin Ryde]
+
+ - Add tests for calling the prime calculating functions with
+   the same base and number.
+
+ - Remove declaration of an unused variable in xs_sieve_primes().
+
 0.21  2010-10-08  <schubiger@cpan.org>
 
  - Merged development version to stable.
