@@ -1,5 +1,9 @@
 Revision history for Perl extension Math::Prime::XS.
 
+0.22  2010-10-24  <schubiger@cpan.org>
+
+ - Merged development version to stable.
+
 0.21_01  2010-10-15  <schubiger@cpan.org>
 
  - Omit checking for validations if the base equals the number.
