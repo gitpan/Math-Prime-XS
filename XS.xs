@@ -12,6 +12,8 @@
 
 #define BIT_VECTOR(num) ((num) / 2) /* double space for uneven numbers */
 
+#define EVEN_NUM(num) ((num) % 2 == 0)
+
 #define NUM_SET(num_entry, var_ptr, num_pos, num_val) \
     (*num_entry).ptr = var_ptr;                       \
     (*num_entry).pos = num_pos;                       \
@@ -61,7 +63,7 @@ xs_mod_primes (number, base)
       for (n = 2; n <= number; n++)
         {
           bool is_prime = true;
-          if (n > 2 && n % 2 == 0)
+          if (n > 2 && EVEN_NUM (n))
             continue;
           for (i = 2; i < n; i++)
             {
@@ -88,44 +90,33 @@ xs_sieve_primes (number, base)
       unsigned long *composite = NULL;
       unsigned long i, n;
     PPCODE:
+      const unsigned long square_root = sqrt (number); /* truncates */
       const unsigned int size_bits = sizeof (unsigned long) * BYTE_BITS;
 
       Newxz (composite, (BIT_VECTOR (number) / size_bits) + 1, unsigned long);
 
-      for (n = 2; n <= number;)
+      for (n = 3; n <= square_root; n += 2) /* uneven numbers only */
         {
-          if (n >= base)
+          /* (n * n) - start with square */
+          /* (2 * n) - skip even number  */
+          for (i = (n * n); i <= number; i += (2 * n))
+            {
+              const unsigned int bits  = BIT_VECTOR (i - 2) % size_bits;
+              const unsigned int field = BIT_VECTOR (i - 2) / size_bits;
+
+              composite[field] |= (unsigned long)1 << bits;
+            }
+        }
+      for (n = 2; n <= number; n++)
+        {
+          if (n > 2 && EVEN_NUM (n))
+            continue;
+          else if (!EVEN_NUM (n) && composite[BIT_VECTOR (n - 2) / size_bits] & ((unsigned long)1 << (BIT_VECTOR (n - 2) % size_bits)))
+            continue;
+          else if (n >= base)
             {
               EXTEND (SP, 1);
               PUSHs (sv_2mortal(newSVuv(n)));
-            }
-          if (n % 2 != 0) /* uneven numbers only */
-            {
-              unsigned long inc;
-              for (i = n; i <= number; i += inc)
-                {
-                  const unsigned int bits  = BIT_VECTOR (i - 2) % size_bits;
-                  const unsigned int field = BIT_VECTOR (i - 2) / size_bits;
-
-                  if (i == n) /* start with square */
-                    inc = (n * n) - i;
-                  else
-                    inc = n;
-
-                  if (i % 2 == 0)
-                    continue;
-
-                  composite[field] |= (unsigned long)1 << bits;
-                }
-            }
-          while (n <= number)
-            {
-              if (n % 2 == 0)
-                n++;
-              else if (composite[BIT_VECTOR (n - 2) / size_bits] & ((unsigned long)1 << (BIT_VECTOR (n - 2) % size_bits)))
-                n++;
-              else
-                break;
             }
         }
 
@@ -191,7 +182,7 @@ xs_trial_primes (number, base)
         {
           bool is_prime = true;
           unsigned long square_root; /* calculate later for efficiency */
-          if (n > 2 && n % 2 == 0)
+          if (n > 2 && EVEN_NUM (n))
             continue;
           square_root = sqrt (n); /* truncates */
           for (i = start; i <= square_root; i++)
@@ -202,7 +193,7 @@ xs_trial_primes (number, base)
               if (i == 1)
                 continue;
               /* even number */
-              else if (i % 2 == 0)
+              else if (EVEN_NUM (i))
                 continue;
               /* number to resume from equals square root */
               else if (start == square_root)
