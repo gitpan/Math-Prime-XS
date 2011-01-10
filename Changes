@@ -1,5 +1,9 @@
 Revision history for Perl extension Math::Prime::XS.
 
+0.23  2011-01-10  <schubiger@cpan.org>
+
+ - Merged development version to stable.
+
 0.22_01  2010-12-07  <schubiger@cpan.org>
 
  - Fix overflow in xs_sieve_primes() marking 1928099 as composite
