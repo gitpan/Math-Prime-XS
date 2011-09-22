@@ -21,9 +21,13 @@
 
 #define NUM_LEN(nums) (sizeof (nums) / sizeof (num_entry))
 
-#ifndef I_STDBOOL
+/* ULONG_MAX_IS_ODD_COMPOSITE is true if ULONG_MAX is odd and composite.
+   Checking mod 3 is enough to detect 2^32-1 and 2^64-1 (and other even
+   number of bits).  */
+#define ULONG_MAX_IS_ODD_COMPOSITE              \
+  ((ULONG_MAX % 2) == 0 || (ULONG_MAX % 3) == 0)
+
 enum { false, true };
-#endif
 
 typedef struct {
     unsigned long **ptr;
@@ -62,25 +66,52 @@ xs_mod_primes (number, base)
     INIT:
       unsigned long i, n;
     PPCODE:
-      for (n = 2; n <= number; n++)
+      /* For the sqrt(), casting double->ulong probably follows the fpu
+         rounding mode, so might round either up or down.  If up then the
+         last trial division may be unnecessary, but not harmful.
+       */
+
+      /* special case for 2 if it's in range, then can use n+=2 for odd n in
+         the loop */
+      if (base <= 2) {
+        base = 3;
+        if (number >= 2) {
+          XPUSHs (sv_2mortal(newSVuv(2)));
+        }
+      }
+
+      /* next higher odd number, if not odd already */
+      base |= 1;
+
+      /* If number==ULONG_MAX then n<=number is always true and would be an
+         infinite loop.  If ULONG_MAX and ULONG_MAX-1 are both composites
+         (which is so for 2^32-1 and 2^64-1) then can stop before them, by
+         shortening "number" to ULONG_MAX-2.  If not (some strange ULONG_MAX
+         value) then check for n>=ULONG_MAX-1 below so n+=2 doesn't
+         overflow.
+       */
+      if (ULONG_MAX_IS_ODD_COMPOSITE) {
+        /* usual case of 2^32-1 or 2^64-1 */
+        if (number > ULONG_MAX-2)
+          number = ULONG_MAX-2;
+      }
+
+      for (n = base; n <= number; n += 2)
         {
-          bool is_prime = true;
-          if (n > 2 && EVEN_NUM (n))
-            continue;
-          for (i = 2; i < n; i++)
+          unsigned long limit = (unsigned long) sqrt(n);
+          for (i = 3; i <= limit; i+=2)
             {
               if (n % i == 0)
-                {
-                  is_prime = false;
-                  break;
-                }
+                goto NEXT_OUTER;
             }
           /* (n % 1 == 0) && (n % n == 0) */
-          if (is_prime && n >= base)
-            {
-              EXTEND (SP, 1);
-              PUSHs (sv_2mortal(newSVuv(n)));
-            }
+          XPUSHs (sv_2mortal(newSVuv(n)));
+
+        NEXT_OUTER:
+          if (! ULONG_MAX_IS_ODD_COMPOSITE) { /* some unusual ULONG_MAX */
+            if (n >= ULONG_MAX-1)
+              break;
+          }
         }
 
 void

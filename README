@@ -25,7 +25,7 @@ SYNOPSIS
      @range_primes = trial_primes(30, 70);
 
 DESCRIPTION
-    `Math::Prime::XS' detects and calculates prime numbers by either
+    "Math::Prime::XS" detects and calculates prime numbers by either
     applying Modulo operator division, the Sieve of Eratosthenes, a
     Summation calculation or Trial division.
 
@@ -35,8 +35,9 @@ FUNCTIONS
 
     Returns true if the number is prime, false if not.
 
-    The XS function invoked within `is_prime()' is subject to change
-    (currently `xs_sieve_primes()').
+    The XS function invoked within "is_prime()" is subject to change
+    (currently "xs_mod_primes()" as it's fastest among the current
+    strategies for a single isolated number).
 
   primes
      @all_primes   = primes($number);
@@ -46,7 +47,7 @@ FUNCTIONS
     number.
 
     The resolved function called is subject to change (currently
-    `sieve_primes()').
+    "sieve_primes()").
 
   mod_primes
      @all_primes   = mod_primes($number);
@@ -54,12 +55,15 @@ FUNCTIONS
 
     Applies the Modulo operator division algorithm:
 
-    Divide the number by all numbers less or equal than itself; if the
-    number is divided exactly two times by the modulo operator without rest,
-    then the number is prime.
+    Divide the number by 2 and all odd numbers <= sqrt(n); if any divides
+    exactly then the number is not prime.
 
-    Returns all primes for the given number or primes between the base and
-    number.
+    Returns all primes between 2 and $number, or between $base and $number
+    (inclusive).
+
+    (This function differs from "trial_primes" in that the latter takes some
+    trouble to divide only by primes below sqrt(n), whereas "mod_primes"
+    divides by all integers not easily identifiable as composite.)
 
   sieve_primes
      @all_primes   = sieve_primes($number);
@@ -76,7 +80,7 @@ FUNCTIONS
     Returns all primes for the given number or primes between the base and
     number.
 
-    http://primes.utm.edu/glossary/page.php?sort=SieveOfEratosthenes
+    <http://primes.utm.edu/glossary/page.php?sort=SieveOfEratosthenes>
 
   sum_primes
      @all_primes   = sum_primes($number);
@@ -95,7 +99,7 @@ FUNCTIONS
     Returns all primes for the given number or primes between the base and
     number.
 
-    http://www.geraldbuehler.de/primzahlen/
+    <http://www.geraldbuehler.de/primzahlen/>
 
   trial_primes
      @all_primes   = trial_primes($number);
@@ -111,36 +115,39 @@ FUNCTIONS
     Returns all primes for the given number or primes between the base and
     number.
 
-    http://primes.utm.edu/glossary/page.php?sort=TrialDivision
+    <http://primes.utm.edu/glossary/page.php?sort=TrialDivision>
 
 BENCHMARK
     Following output resulted from a benchmark measuring the time to
     calculate primes up to 1,000,000 with 100 iterations for each function.
-    The tests were conducted by the `cmpthese' function of the Benchmark
+    The tests were conducted by the "cmpthese" function of the Benchmark
     module.
 
-                       Rate   mod_primes   sum_primes trial_primes sieve_primes
-    mod_primes   6.39e-03/s           --        -100%        -100%        -100%
-    sum_primes       8.10/s      126540%           --         -41%         -89%
-    trial_primes     13.6/s      212979%          68%           --         -82%
-    sieve_primes     74.6/s     1167064%         822%         448%           --
+                    Rate   mod_primes trial_primes   sum_primes sieve_primes
+     mod_primes   1.32/s           --         -58%         -79%         -97%
+     trial_primes 3.13/s         137%           --         -49%         -93%
+     sum_primes   6.17/s         366%          97%           --         -86%
+     sieve_primes 43.3/s        3173%        1284%         602%           --
+
+    The "Rate" column is the speed in how many times per second, so
+    "sieve_primes()" is the fastest for this particular test.
 
 EXPORT
   Functions
-    `is_prime(), primes(), mod_primes(), sieve_primes(), sum_primes(),
-    trial_primes()' are exportable.
+    "is_prime(), primes(), mod_primes(), sieve_primes(), sum_primes(),
+    trial_primes()" are exportable.
 
   Tags
-    `:all - *()'
+    ":all - *()"
 
 BUGS & CAVEATS
     Note that the order of execution speed for functions may differ from the
     benchmarked results when numbers get larger or smaller.
 
 SEE ALSO
-    http://primes.utm.edu,
-    http://www.it.fht-esslingen.de/~schmidt/vorlesungen/kryptologie/seminar/
-    ws9798/html/prim/prim-1.html
+    <http://primes.utm.edu>,
+    <http://www.it.fht-esslingen.de/~schmidt/vorlesungen/kryptologie/seminar
+    /ws9798/html/prim/prim-1.html>
 
 AUTHOR
     Steven Schubiger <schubiger@cpan.org>
@@ -149,5 +156,5 @@ LICENSE
     This program is free software; you may redistribute it and/or modify it
     under the same terms as Perl itself.
 
-    See http://dev.perl.org/licenses/
+    See <http://dev.perl.org/licenses/>
 

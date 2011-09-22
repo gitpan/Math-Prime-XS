@@ -12,7 +12,7 @@ use Scalar::Util qw(looks_like_number);
 our ($VERSION, @EXPORT_OK, %EXPORT_TAGS);
 my @subs;
 
-$VERSION = '0.23_01';
+$VERSION = '0.24';
 @subs = qw(is_prime primes mod_primes sieve_primes sum_primes trial_primes);
 @EXPORT_OK = @subs;
 %EXPORT_TAGS = ('all' => [ @subs ]);
@@ -32,7 +32,7 @@ sub is_prime
     # sub {} due to extra stack_skip level
     sub { validate_pos(@_, 1) }->(@_);
     _validate(@_);
-    return defined xs_sieve_primes(($_[0]) x 2) ? true : false;
+    return defined xs_mod_primes(($_[0]) x 2) ? true : false;
 }
 
 *primes = \&sieve_primes;
@@ -113,8 +113,9 @@ or Trial division.
 
 Returns true if the number is prime, false if not.
 
-The XS function invoked within C<is_prime()> is subject to change
-(currently C<xs_sieve_primes()>).
+The XS function invoked within C<is_prime()> is subject to change (currently
+C<xs_mod_primes()> as it's fastest among the current strategies for a single
+isolated number).
 
 =head2 primes
 
@@ -132,11 +133,15 @@ The resolved function called is subject to change (currently C<sieve_primes()>).
 
 Applies the Modulo operator division algorithm:
 
-Divide the number by all numbers less or equal than itself; if the number
-is divided exactly two times by the modulo operator without rest, then the
-number is prime.
+Divide the number by 2 and all odd numbers E<lt>= sqrt(n); if any divides
+exactly then the number is not prime.
 
-Returns all primes for the given number or primes between the base and number.
+Returns all primes between 2 and C<$number>, or between C<$base> and
+C<$number> (inclusive).
+
+(This function differs from C<trial_primes> in that the latter takes some
+trouble to divide only by primes below sqrt(n), whereas C<mod_primes>
+divides by all integers not easily identifiable as composite.)
 
 =head2 sieve_primes
 
@@ -196,11 +201,14 @@ Following output resulted from a benchmark measuring the time to calculate
 primes up to 1,000,000 with 100 iterations for each function. The tests
 were conducted by the C<cmpthese> function of the Benchmark module.
 
-                   Rate   mod_primes   sum_primes trial_primes sieve_primes
-mod_primes   6.39e-03/s           --        -100%        -100%        -100%
-sum_primes       8.10/s      126540%           --         -41%         -89%
-trial_primes     13.6/s      212979%          68%           --         -82%
-sieve_primes     74.6/s     1167064%         822%         448%           --
+                Rate   mod_primes trial_primes   sum_primes sieve_primes
+ mod_primes   1.32/s           --         -58%         -79%         -97%
+ trial_primes 3.13/s         137%           --         -49%         -93%
+ sum_primes   6.17/s         366%          97%           --         -86%
+ sieve_primes 43.3/s        3173%        1284%         602%           --
+
+The "Rate" column is the speed in how many times per second, so
+C<sieve_primes()> is the fastest for this particular test.
 
 =head1 EXPORT
 

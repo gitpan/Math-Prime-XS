@@ -4,7 +4,7 @@
       "Steven Schubiger <schubiger@cpan.org>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.110930",
+   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.112580",
    "license" : [
       "perl_5"
    ],
@@ -43,14 +43,14 @@
    "provides" : {
       "Math::Prime::XS" : {
          "file" : "lib/Math/Prime/XS.pm",
-         "version" : "0.23_01"
+         "version" : "0.24"
       }
    },
-   "release_status" : "testing",
+   "release_status" : "stable",
    "resources" : {
       "license" : [
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.23_01"
+   "version" : "0.24"
 }

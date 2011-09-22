@@ -2,20 +2,20 @@
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
-          'PL_FILES' => {},
-          'INSTALLDIRS' => 'site',
           'NAME' => 'Math::Prime::XS',
-          'EXE_FILES' => [],
           'VERSION_FROM' => 'lib/Math/Prime/XS.pm',
           'PREREQ_PM' => {
-                           'Scalar::Util' => 0,
-                           'XSLoader' => 0,
-                           'Exporter' => 0,
                            'Carp' => 0,
-                           'boolean' => 0,
-                           'Test::More' => 0,
+                           'Exporter' => 0,
+                           'ExtUtils::CBuilder' => 0,
                            'Params::Validate' => 0,
-                           'ExtUtils::CBuilder' => 0
-                         }
+                           'Scalar::Util' => 0,
+                           'Test::More' => 0,
+                           'XSLoader' => 0,
+                           'boolean' => 0
+                         },
+          'INSTALLDIRS' => 'site',
+          'EXE_FILES' => [],
+          'PL_FILES' => {}
         )
 ;

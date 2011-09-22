@@ -1,9 +1,10 @@
 Revision history for Perl extension Math::Prime::XS.
 
-0.23_01  2011-09-22  <schubiger@cpan.org>
+0.24  2011-09-24  <kryde@cpan.org>
 
- - Fix build failure caused by perl's inclusion of stdbool.h.
-   [perl #99408 - Andreas Koenig]
+ - mod_primes() fix: avoid infinite loop if number==2**32-1
+ - mod_primes() enhancement: consider only odd integers from "base"
+   upwards; divide only by odd numbers up to sqrt(n)
 
 0.23  2011-01-10  <schubiger@cpan.org>
 

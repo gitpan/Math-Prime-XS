@@ -5,7 +5,7 @@ use warnings;
 use boolean qw(true false);
 
 use Math::Prime::XS ':all';
-use Test::More tests => 17;
+use Test::More tests => 19;
 
 local $" = ',';
 
@@ -60,4 +60,25 @@ is(trial_primes(@prime), $expected_prime, "trial_primes(@prime)");
         }
     }
     ok($found, "sieve_primes($number) - prime $prime not returned");
+}
+
+# 0xFFFF_FFFF = 2^32-1 and 0xFF...FF = 2^64-1 are both divisible by 3 so
+# mod_primes() is fast on them.
+#
+# On a 32-bit system 2^64-1 is silently truncated to 2^32-1 in usual Perl
+# fashion, but check longsize so as not to attempt a value too big to
+# handle.
+#
+{
+  my $n = 2**32-1;
+  my @got = mod_primes($n,$n);
+  is_deeply(\@got, [], "mod_primes() no infinite loop trying $n");
+}
+SKIP: {
+  require Config;
+  $Config::Config{'longsize'} >= 8
+      or skip "longsize only $Config::Config{'longsize'}, don't try 2**64-1", 1;
+  my $n = 2**64-1;
+  my @got = mod_primes($n,$n);
+  is_deeply(\@got, [], "mod_primes() no infinite loop trying $n");
 }
