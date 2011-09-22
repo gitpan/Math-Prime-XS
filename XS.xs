@@ -21,7 +21,9 @@
 
 #define NUM_LEN(nums) (sizeof (nums) / sizeof (num_entry))
 
+#ifndef I_STDBOOL
 enum { false, true };
+#endif
 
 typedef struct {
     unsigned long **ptr;

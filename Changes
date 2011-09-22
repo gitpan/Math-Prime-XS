@@ -1,5 +1,10 @@
 Revision history for Perl extension Math::Prime::XS.
 
+0.23_01  2011-09-22  <schubiger@cpan.org>
+
+ - Fix build failure caused by perl's inclusion of stdbool.h.
+   [perl #99408 - Andreas Koenig]
+
 0.23  2011-01-10  <schubiger@cpan.org>
 
  - Merged development version to stable.

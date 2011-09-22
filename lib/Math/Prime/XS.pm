@@ -12,7 +12,7 @@ use Scalar::Util qw(looks_like_number);
 our ($VERSION, @EXPORT_OK, %EXPORT_TAGS);
 my @subs;
 
-$VERSION = '0.23';
+$VERSION = '0.23_01';
 @subs = qw(is_prime primes mod_primes sieve_primes sum_primes trial_primes);
 @EXPORT_OK = @subs;
 %EXPORT_TAGS = ('all' => [ @subs ]);

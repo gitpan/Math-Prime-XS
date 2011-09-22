@@ -31,7 +31,6 @@ DESCRIPTION
 
 FUNCTIONS
   is_prime
-
      is_prime($number);
 
     Returns true if the number is prime, false if not.
@@ -40,7 +39,6 @@ FUNCTIONS
     (currently `xs_sieve_primes()').
 
   primes
-
      @all_primes   = primes($number);
      @range_primes = primes($base, $number);
 
@@ -51,7 +49,6 @@ FUNCTIONS
     `sieve_primes()').
 
   mod_primes
-
      @all_primes   = mod_primes($number);
      @range_primes = mod_primes($base, $number);
 
@@ -65,7 +62,6 @@ FUNCTIONS
     number.
 
   sieve_primes
-
      @all_primes   = sieve_primes($number);
      @range_primes = sieve_primes($base, $number);
 
@@ -83,7 +79,6 @@ FUNCTIONS
     http://primes.utm.edu/glossary/page.php?sort=SieveOfEratosthenes
 
   sum_primes
-
      @all_primes   = sum_primes($number);
      @range_primes = sum_primes($base, $number);
 
@@ -103,7 +98,6 @@ FUNCTIONS
     http://www.geraldbuehler.de/primzahlen/
 
   trial_primes
-
      @all_primes   = trial_primes($number);
      @range_primes = trial_primes($base, $number);
 
@@ -133,12 +127,10 @@ BENCHMARK
 
 EXPORT
   Functions
-
     `is_prime(), primes(), mod_primes(), sieve_primes(), sum_primes(),
     trial_primes()' are exportable.
 
   Tags
-
     `:all - *()'
 
 BUGS & CAVEATS
