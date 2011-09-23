@@ -27,7 +27,9 @@
 #define ULONG_MAX_IS_ODD_COMPOSITE              \
   ((ULONG_MAX % 2) == 0 || (ULONG_MAX % 3) == 0)
 
+#ifndef I_STDBOOL
 enum { false, true };
+#endif
 
 typedef struct {
     unsigned long **ptr;
