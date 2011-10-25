@@ -6,21 +6,29 @@ use Math::Prime::XS ':all';
 
 print "Math::Prime::XS version ",Math::Prime::XS->VERSION,"\n";
 
-$number = 1000003; # a prime
-cmpthese(100000, {
-             mod_primes => sub { mod_primes($number,$number) },
-             # sum_primes => sub { sum_primes($number,$number) },
-             # trial_primes => sub { trial_primes($number,$number) },
-             # sieve_primes => sub { sieve_primes($number,$number) },
-            });
+{
+  my $number = 1_000_000;
+  cmpthese(10, {
+                 is_prime => sub { foreach (1 .. 1_000_000) { is_prime($_) } },
+                });
+  cmpthese(100, {
+                 mod_primes => sub { mod_primes($number) },
+                 sum_primes => sub { sum_primes($number) },
+                 trial_primes => sub { trial_primes($number) },
+                 sieve_primes => sub { sieve_primes($number) },
+                });
+}
 
-my $number = 1_000_000;
-cmpthese(100, {
-             mod_primes => sub { mod_primes($number) },
-             sum_primes => sub { sum_primes($number) },
-             trial_primes => sub { trial_primes($number) },
-             sieve_primes => sub { sieve_primes($number) },
-            });
+{
+  use constant NUM => 1000003; # a prime
+  cmpthese(100000, {
+                    is_prime => sub { is_prime(NUM) },
+                    mod_primes => sub { mod_primes(NUM,NUM) },
+                    # sum_primes => sub { sum_primes(NUM,NUM) },
+                    # trial_primes => sub { trial_primes(NUM,NUM) },
+                    # sieve_primes => sub { sieve_primes(NUM,NUM) },
+                   });
+}
 
 exit 0;
 

@@ -5,7 +5,7 @@ use warnings;
 use boolean qw(true false);
 
 use Math::Prime::XS ':all';
-use Test::More tests => 19;
+use Test::More tests => 26;
 
 local $" = ',';
 
@@ -28,6 +28,27 @@ foreach my $num (0 .. $number) {
     push @got_primes, $num if is_prime($num);
 }
 is_deeply(\@got_primes, \@expected_all_primes, "is_prime() [0-$number]");
+ok (! is_prime(0xFFFF_FFFF), "is_prime() on 0xFFFF_FFFF");
+ok (! eval { is_prime(-1); 1 }, "is_prime() croak on -1");
+ok (! eval { is_prime(2**256); 1 }, "is_prime() croak on 2**256");
+my $infinity;
+SKIP: {
+  require POSIX;
+  my $inf = POSIX::DBL_MAX() * POSIX::DBL_MAX();
+  $inf > POSIX::DBL_MAX()
+    or skip "no floating point infinity, it seems", 2;
+  $infinity = $inf;
+  ok (! eval { is_prime($inf); 1 }, "is_prime() croak on +infinity");
+  ok (! eval { is_prime(-$inf); 1 }, "is_prime() croak on -infinity");
+}
+SKIP: {
+  require POSIX;
+  my $nan = (defined $infinity && $infinity / $infinity);
+  $nan != $nan
+    or skip "no floating point nan, it seems", 2;
+  ok (! eval { is_prime($nan); 1 }, "is_prime() croak on nan");
+  ok (! eval { is_prime(-$nan); 1 }, "is_prime() croak on -nan");
+}
 
 is_deeply([primes($number)],       \@expected_all_primes, "primes($number)",     );
 is_deeply([mod_primes($number)],   \@expected_all_primes, "mod_primes($number)"  );
@@ -81,4 +102,7 @@ SKIP: {
   my $n = 2**64-1;
   my @got = mod_primes($n,$n);
   is_deeply(\@got, [], "mod_primes() no infinite loop trying $n");
+
+  ok (! is_prime($n), "is_prime() on $n");
+
 }

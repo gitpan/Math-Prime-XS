@@ -12,7 +12,7 @@ use Scalar::Util qw(looks_like_number);
 our ($VERSION, @EXPORT_OK, %EXPORT_TAGS);
 my @subs;
 
-$VERSION = '0.25';
+$VERSION = '0.25_01';
 @subs = qw(is_prime primes mod_primes sieve_primes sum_primes trial_primes);
 @EXPORT_OK = @subs;
 %EXPORT_TAGS = ('all' => [ @subs ]);
@@ -26,14 +26,6 @@ validation_options(
 },
     stack_skip => 2,
 );
-
-sub is_prime
-{
-    # sub {} due to extra stack_skip level
-    sub { validate_pos(@_, 1) }->(@_);
-    _validate(@_);
-    return defined xs_mod_primes(($_[0]) x 2) ? true : false;
-}
 
 *primes = \&sieve_primes;
 
@@ -114,8 +106,7 @@ or Trial division.
 Returns true if the number is prime, false if not.
 
 The XS function invoked within C<is_prime()> is subject to change (currently
-C<xs_mod_primes()> as it's fastest among the current strategies for a single
-isolated number).
+it's an all-XS trial division skipping multiples of 2,3,5).
 
 =head2 primes
 

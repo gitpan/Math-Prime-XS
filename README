@@ -36,8 +36,7 @@ FUNCTIONS
     Returns true if the number is prime, false if not.
 
     The XS function invoked within "is_prime()" is subject to change
-    (currently "xs_mod_primes()" as it's fastest among the current
-    strategies for a single isolated number).
+    (currently it's an all-XS trial division skipping multiples of 2,3,5).
 
   primes
      @all_primes   = primes($number);

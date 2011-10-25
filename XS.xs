@@ -27,10 +27,6 @@
 #define ULONG_MAX_IS_ODD_COMPOSITE              \
   ((ULONG_MAX % 2) == 0 || (ULONG_MAX % 3) == 0)
 
-#ifndef I_STDBOOL
-enum { false, true };
-#endif
-
 typedef struct {
     unsigned long **ptr;
     unsigned int pos;
@@ -59,6 +55,118 @@ store (const num_entry *numbers, unsigned int len, unsigned int *pos)
 }
 
 MODULE = Math::Prime::XS                PACKAGE = Math::Prime::XS
+
+bool
+is_prime (n)
+      unsigned long n
+    PREINIT:
+      /* Bit table of numbers 0 to 31 which are primes. */
+      const unsigned long small_table = (( (1 << 2))
+                                          | (1 << 3)
+                                          | (1 << 5)
+                                          | (1 << 7)
+                                          | (1 << 11)
+                                          | (1 << 13)
+                                          | (1 << 17)
+                                          | (1 << 19)
+                                          | (1 << 23)
+                                          | (1 << 29)
+                                          | (1 << 31));
+
+      /* Bit table of the remainders mod 30 which might be primes, ie. which
+         aren't divisible by 2, 3 or 5. */
+      const unsigned long mod_table = ~ (( (1 << 0))
+                                         | (1 << 2)
+                                         | (1 << 4)
+                                         | (1 << 6)
+                                         | (1 << 8)
+                                         | (1 << 10)
+                                         | (1 << 12)
+                                         | (1 << 14)
+                                         | (1 << 16)
+                                         | (1 << 18)
+                                         | (1 << 20)
+                                         | (1 << 22)
+                                         | (1 << 24)
+                                         | (1 << 26)
+                                         | (1 << 28)
+                                         | (1 << 30)
+
+                                         | (1 << 3)
+                                         | (1 << 6)
+                                         | (1 << 9)
+                                         | (1 << 12)
+                                         | (1 << 15)
+                                         | (1 << 18)
+                                         | (1 << 21)
+                                         | (1 << 24)
+                                         | (1 << 27)
+                                         | (1 << 30)
+
+                                         | (1 << 5)
+                                         | (1 << 10)
+                                         | (1 << 15)
+                                         | (1 << 20)
+                                         | (1 << 25));
+
+    INIT:
+      unsigned long i;
+    CODE:
+      {
+        double d = SvNV(ST(0));
+        if (! (d >= 0 && d <= ULONG_MAX)) {
+          croak ("Cannot isprime() on %g", d);
+        }
+      }
+
+      if (n < 32) {
+        RETVAL = (small_table >> n) & 1;
+      } else {
+        RETVAL = 0;
+        if ((mod_table >> (n%30)) & 1) {
+          unsigned long limit = (unsigned long) floor(sqrt(n));
+
+          /* At this point n is not a multiple of 2, 3 or 5, so can skip odd
+             i, and i multiple of 3, and i multiple of 5.
+
+             For reference, doing all odd i would be 15 out of each 30
+             divisors.  Excluding i multiples of 3 reduces to 10 out of 30.
+             Excluding i multiples of 5 reduces to 8 out of 30. */
+
+          i = 7;
+          for (;;) {
+            if (n % i == 0)  goto done;   /* i == 30*k+7 */
+
+            if ((i += 4) > limit) break;  /* i == 30*k+11 */
+            if (n % i == 0)  goto done;
+
+            if ((i += 2) > limit) break;  /* i == 30*k+13 */
+            if (n % i == 0)  goto done;
+
+            if ((i += 4) > limit) break;  /* i == 30*k+17 */
+            if (n % i == 0)  goto done;
+
+            if ((i += 2) > limit) break;  /* i == 30*k+19 */
+            if (n % i == 0)  goto done;
+
+            if ((i += 4) > limit) break;  /* i == 30*k+23 */
+            if (n % i == 0)  goto done;
+
+            if ((i += 6) > limit) break;  /* i == 30*k+29 */
+            if (n % i == 0)  goto done;
+
+            if ((i += 2) > limit) break;  /* i == 30*k+1 */
+            if (n % i == 0)  goto done;
+
+            if ((i += 6) > limit) break;  /* back to i == 30*k+7 */
+          }
+          RETVAL = 1;
+        }
+      }
+      done:
+      ;
+    OUTPUT:
+      RETVAL
 
 void
 xs_mod_primes (number, base)
@@ -100,7 +208,7 @@ xs_mod_primes (number, base)
 
       for (n = base; n <= number; n += 2)
         {
-          unsigned long limit = (unsigned long) sqrt(n);
+          unsigned long limit = (unsigned long) floor(sqrt(n));
           for (i = 3; i <= limit; i+=2)
             {
               if (n % i == 0)
@@ -169,7 +277,7 @@ xs_sum_primes (number, base)
     PPCODE:
       for (n = 2; n <= number; n++)
         {
-          bool is_prime = true;
+          bool is_prime = TRUE;
           const unsigned long square_root = sqrt (n); /* truncates */
           unsigned int c;
           for (c = 0; c < pos && primes[c] <= square_root; c++)
@@ -180,7 +288,7 @@ xs_sum_primes (number, base)
               sums[c] = sum;
               if (sum == n)
                 {
-                  is_prime = false;
+                  is_prime = FALSE;
                   break;
                 }
             }
@@ -215,14 +323,14 @@ xs_trial_primes (number, base)
     PPCODE:
       for (n = 2; n <= number; n++)
         {
-          bool is_prime = true;
+          bool is_prime = TRUE;
           unsigned long square_root; /* calculate later for efficiency */
           if (n > 2 && EVEN_NUM (n))
             continue;
           square_root = sqrt (n); /* truncates */
           for (i = start; i <= square_root; i++)
             {
-              bool save_as_prime = true;
+              bool save_as_prime = TRUE;
               unsigned long c;
               /* not prime */
               if (i == 1)
@@ -240,7 +348,7 @@ xs_trial_primes (number, base)
                 {
                   if (i % c == 0)
                     {
-                      save_as_prime = false;
+                      save_as_prime = FALSE;
                       break;
                     }
                 }
@@ -259,7 +367,7 @@ xs_trial_primes (number, base)
                 {
                   if (n % primes[c] == 0)
                     {
-                      is_prime = false;
+                      is_prime = FALSE;
                       break;
                     }
                 }
