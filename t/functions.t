@@ -5,7 +5,7 @@ use warnings;
 use boolean qw(true false);
 
 use Math::Prime::XS ':all';
-use Test::More tests => 26;
+use Test::More tests => 27;
 
 local $" = ',';
 
@@ -97,12 +97,11 @@ is(trial_primes(@prime), $expected_prime, "trial_primes(@prime)");
 }
 SKIP: {
   require Config;
-  $Config::Config{'longsize'} >= 8
-      or skip "longsize only $Config::Config{'longsize'}, don't try 2**64-1", 1;
+  unless ($Config::Config{'longsize'} >= 8) {
+    skip "longsize only $Config::Config{'longsize'}, don't try 2**64-1", 2;
+  }
   my $n = 2**64-1;
   my @got = mod_primes($n,$n);
   is_deeply(\@got, [], "mod_primes() no infinite loop trying $n");
-
   ok (! is_prime($n), "is_prime() on $n");
-
 }
