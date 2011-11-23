@@ -43,14 +43,14 @@
    "provides" : {
       "Math::Prime::XS" : {
          "file" : "lib/Math/Prime/XS.pm",
-         "version" : "0.25_02"
+         "version" : "0.26"
       }
    },
-   "release_status" : "testing",
+   "release_status" : "stable",
    "resources" : {
       "license" : [
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.25_02"
+   "version" : "0.26"
 }

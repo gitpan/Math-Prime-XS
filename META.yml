@@ -17,7 +17,7 @@ name: Math-Prime-XS
 provides:
   Math::Prime::XS:
     file: lib/Math/Prime/XS.pm
-    version: 0.25_02
+    version: 0.26
 recommends:
   Test::Pod: 1.14
   Test::Pod::Coverage: 1.04
@@ -30,4 +30,4 @@ requires:
   boolean: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.25_02
+version: 0.26

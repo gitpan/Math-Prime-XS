@@ -1,13 +1,17 @@
 Revision history for Perl extension Math::Prime::XS.
 
+0.26  2011-11-24  <kryde@cpan.org>
+
+ - Stable release.
+
 0.25_02  2011-10-30  <kryde@cpan.org>
 
- - fix functions.t test count for 64-bit long
+ - Fix functions.t test count for 64-bit long
 
 0.25_01  2011-10-25  <kryde@cpan.org>
 
  - is_prime() all-XS code for speedup
- - try Perl's TRUE/FALSE to avoid stdbool.h configury
+ - Try Perl's TRUE/FALSE to avoid stdbool.h configury
 
 0.25  2011-09-24  <kryde@cpan.org>
 
