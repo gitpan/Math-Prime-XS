@@ -5,7 +5,9 @@ use warnings;
 use boolean qw(true false);
 
 use Math::Prime::XS ':all';
-use Test::More tests => 27;
+use Test::More tests => 29;
+
+diag "perl version ",$];
 
 local $" = ',';
 
@@ -44,10 +46,13 @@ SKIP: {
 SKIP: {
   require POSIX;
   my $nan = (defined $infinity && $infinity / $infinity);
+  diag "nan is: ",$nan;
   $nan != $nan
     or skip "no floating point nan, it seems", 2;
+  my $neg_nan = - $nan;
+  diag "neg nan is: ",$neg_nan;
   ok (! eval { is_prime($nan); 1 }, "is_prime() croak on nan");
-  ok (! eval { is_prime(-$nan); 1 }, "is_prime() croak on -nan");
+  ok (! eval { is_prime($neg_nan); 1 }, "is_prime() croak on -nan");
 }
 
 is_deeply([primes($number)],       \@expected_all_primes, "primes($number)",     );
@@ -55,12 +60,16 @@ is_deeply([mod_primes($number)],   \@expected_all_primes, "mod_primes($number)" 
 is_deeply([sieve_primes($number)], \@expected_all_primes, "sieve_primes($number)");
 is_deeply([sum_primes($number)],   \@expected_all_primes, "sum_primes($number)"  );
 is_deeply([trial_primes($number)], \@expected_all_primes, "trial_primes($number)");
+is_deeply([count_primes($number)], [scalar(@expected_all_primes)],
+          "count_primes($number)");
 
 is_deeply([primes(@range)],       \@expected_range_primes, "primes(@range)"      );
 is_deeply([mod_primes(@range)],   \@expected_range_primes, "mod_primes(@range)"  );
 is_deeply([sieve_primes(@range)], \@expected_range_primes, "sieve_primes(@range)");
 is_deeply([sum_primes(@range)],   \@expected_range_primes, "sum_primes(@range)"  );
 is_deeply([trial_primes(@range)], \@expected_range_primes, "trial_primes(@range)");
+is_deeply([count_primes(@range)], [scalar(@expected_range_primes)],
+          "count_primes($number)");
 
 is(primes(@prime),       $expected_prime, "primes(@prime)"      );
 is(mod_primes(@prime),   $expected_prime, "mod_primes(@prime)"  );

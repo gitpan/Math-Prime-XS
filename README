@@ -48,6 +48,15 @@ FUNCTIONS
     The resolved function called is subject to change (currently
     "sieve_primes()").
 
+  count_primes
+     $count = count_primes($number);
+     $count = count_primes($base, $number);
+
+    Return a count of primes from 0 to $number, or from $base to $number,
+    inclusive. The arguments are the same as "primes()" but the return is
+    just a count of the primes.
+
+SPECIFIC ALGORITHMS
   mod_primes
      @all_primes   = mod_primes($number);
      @range_primes = mod_primes($base, $number);

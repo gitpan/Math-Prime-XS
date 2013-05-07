@@ -12,8 +12,9 @@ use Scalar::Util qw(looks_like_number);
 our ($VERSION, @EXPORT_OK, %EXPORT_TAGS);
 my @subs;
 
-$VERSION = '0.26';
-@subs = qw(is_prime primes mod_primes sieve_primes sum_primes trial_primes);
+$VERSION = '0.26_01';
+@subs = qw(is_prime primes count_primes
+           mod_primes sieve_primes sum_primes trial_primes);
 @EXPORT_OK = @subs;
 %EXPORT_TAGS = ('all' => [ @subs ]);
 
@@ -28,6 +29,7 @@ validation_options(
 );
 
 *primes = \&sieve_primes;
+sub count_primes { _validate(@_); @_ == 1 ? xs_sieve_count_primes($_[0], 2) : xs_sieve_count_primes(reverse @_) }
 
 # Reverse arguments for xs_*_primes() when both base and number are specified
 sub mod_primes   { _validate(@_); @_ == 1 ? xs_mod_primes  ($_[0], 2) : xs_mod_primes  (reverse @_) }
@@ -116,6 +118,17 @@ it's an all-XS trial division skipping multiples of 2,3,5).
 Returns all primes for the given number or primes between the base and number.
 
 The resolved function called is subject to change (currently C<sieve_primes()>).
+
+=head2 count_primes
+
+ $count = count_primes($number);
+ $count = count_primes($base, $number);
+
+Return a count of primes from 0 to C<$number>, or from C<$base> to
+C<$number>, inclusive.  The arguments are the same as C<primes()> but the
+return is just a count of the primes.
+
+=head1 SPECIFIC ALGORITHMS
 
 =head2 mod_primes
 

@@ -229,9 +229,12 @@ xs_sieve_primes (number, base)
       unsigned long number
       unsigned long base
     PROTOTYPE: $$
+    ALIAS:
+     xs_sieve_count_primes = 1
     INIT:
       unsigned long *composite = NULL;
       unsigned long i, n;
+      unsigned long count = 0;
     PPCODE:
       const unsigned long square_root = sqrt (number); /* truncates */
       const unsigned int size_bits = sizeof (unsigned long) * BYTE_BITS;
@@ -258,12 +261,22 @@ xs_sieve_primes (number, base)
             continue;
           else if (n >= base)
             {
-              EXTEND (SP, 1);
-              PUSHs (sv_2mortal(newSVuv(n)));
+              if (ix) {
+                /* xs_sieve_count_primes() */
+                count++;
+              } else {
+                /* xs_sieve_primes() */
+                mXPUSHu(n);
+              }
             }
         }
 
       Safefree (composite);
+
+      if (ix) {
+        /* xs_sieve_count_primes() */
+        mXPUSHu(count);
+      }
 
 void
 xs_sum_primes (number, base)

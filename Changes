@@ -1,5 +1,9 @@
 Revision history for Perl extension Math::Prime::XS.
 
+0.26_01  2013-04-28  <kryde@cpan.org>
+
+ - New count_primes() as suggested by Dana Jacobsen.
+
 0.26  2011-11-24  <kryde@cpan.org>
 
  - Stable release.
